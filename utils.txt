@@ -1,0 +1,14 @@
+-Install Node.js
+
+-Install angular-cli:
+	npm install -g @angular/cli
+
+-Visual Studio Code:
+ Install Angular Essentials extension
+ Install Material Icon Theme
+
+-Create angular app:
+	ng new "app-name"
+
+-Add Angular Material
+  ng add @angular/material
