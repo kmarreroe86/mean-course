@@ -1,11 +1,15 @@
 <mat-card>
-  <mat-form-field>
-    <textarea matInput rows="6" #postInput [value]="newPost" #posTemplateRef></textarea>
-  </mat-form-field>
+  <form (submit)="savePost(createPostForm)" #createPostForm="ngForm">
+    <mat-form-field>
+      <input matInput type="text" name="title" #title="ngModel" ngModel required minlength="3" placeholder="Post Title">
+      <mat-error *ngIf="title.invalid">Please enter title</mat-error>
+    </mat-form-field>
 
-  <button mat-raised-button color="accent" class="btn" (click)="savePost(posTemplateRef)">Save Post</button>
+    <mat-form-field>
+      <textarea matInput rows="4" name="content" #content="ngModel" ngModel required #posTemplateRef placeholder="Message"></textarea>
+      <mat-error *ngIf="content.invalid">Please enter message</mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="accent" class="btn" type="submit" [disabled]="createPostForm.invalid">Save Post</button>
+  </form>
 </mat-card>
-
-
-
-<p>{{newPost}}</p>
