@@ -12,3 +12,20 @@
 
 -Add Angular Material
   ng add @angular/material
+
+-Install express:
+  npm install --save express
+
+-Install nodemon
+  npm install --save-dev nodemon
+    (npm start "name_of_scripts" in packagejson)
+
+-Install body-parser (For parse requests body)
+  npm install --save body-parser
+
+-Install mongoose for MongoDB access:
+  npm install --save mongoose
+
+MongoDb Atlas cluster credentials:
+karel
+E6ogCXkMu6rEAB7m
