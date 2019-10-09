@@ -12,14 +12,17 @@ import { takeUntil } from 'rxjs/internal/operators';
 export class PostListComponent implements OnInit, OnDestroy {
 
   posts: Post[] = [];
+  isLoading = false;
   private destroyed = new Subject();
 
   constructor(private postService: PostsService) { }
 
   ngOnInit() {
+    this.isLoading = true;
     this.postService.getPosts();
     this.postService.getPostUpdateListListener().pipe(takeUntil(this.destroyed)).subscribe((postList: Post[]) => {
       this.posts = postList;
+      this.isLoading = false;
     });
 
   }
@@ -27,6 +30,10 @@ export class PostListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroyed.next();
     this.destroyed.complete();
+  }
+
+  onDeletePost(id: string): void {
+    this.postService.deletePost(id);
   }
 
 }

@@ -19,12 +19,16 @@
 -Install nodemon
   npm install --save-dev nodemon
     (npm start "name_of_scripts" in packagejson)
+    pm run  startnode
 
 -Install body-parser (For parse requests body)
   npm install --save body-parser
 
 -Install mongoose for MongoDB access:
   npm install --save mongoose
+
+-Install cors Package for providing a Connect/Express middleware
+npm install cors
 
 MongoDb Atlas cluster credentials:
 karel

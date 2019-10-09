@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+// const cors = require('cors');
 
-const Post = require('./models/post');
+const postRoutes = require('./routes/posts');
+
 
 const app = express();
 
@@ -15,39 +17,22 @@ mongoose.connect('mongodb+srv://karel:E6ogCXkMu6rEAB7m@cluster0-pccc6.mongodb.ne
     console.log('Database connection failed');
   });
 
-app.use((req, res, next) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+ app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+  );
   next();
 });
+// app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-app.get('/api/posts', (req, res, next) => {
-  // console.log(req.url);
-  Post.find((err, data) => {
-    console.log(data);
-    res.status(200).json({
-      message: 'Post fetched successfully',
-      posts: data
-    });
-  });
-
-});
-
-app.post('/api/posts', (req, res, next) => {
-
-  const post = new Post({
-    title: req.body.title,
-    content: req.body.content
-  });
-  post.save();
-  res.status(201).json({
-    message: 'Post added successfully',
-  });
-
-});
+app.use('/api/posts', postRoutes);
 
 module.exports = app;
