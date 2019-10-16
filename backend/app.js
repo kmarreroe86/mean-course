@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path');
 // const cors = require('cors');
 
 const postRoutes = require('./routes/posts');
@@ -33,6 +34,7 @@ mongoose.connect('mongodb+srv://karel:E6ogCXkMu6rEAB7m@cluster0-pccc6.mongodb.ne
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/images', express.static(path.join('backend/images'))); // requests address to images will go to backend/images directory
 app.use('/api/posts', postRoutes);
 
 module.exports = app;

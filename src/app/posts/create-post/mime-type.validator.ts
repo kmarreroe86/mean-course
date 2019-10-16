@@ -1,5 +1,5 @@
 import { AbstractControl } from '@angular/forms';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, of } from 'rxjs';
 
 /**
  * If the validator returns null then is valid, otherwise should return an array of
@@ -19,6 +19,9 @@ export function mimeTypeImageAsyncValidator(control: AbstractControl):
     fileReader.addEventListener('loadend', () => {
       const arr = new Uint8Array(fileReader.result as ArrayBuffer).subarray(0, 4); // Access to the mimetype information
 
+      if (typeof(control.value) === 'string') {
+        return of(null);
+      }
       let header = '';
       let isValid = false;
       // tslint:disable-next-line: prefer-for-of

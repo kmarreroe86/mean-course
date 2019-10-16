@@ -19,7 +19,7 @@
 -Install nodemon
   npm install --save-dev nodemon
     (npm start "name_of_scripts" in packagejson)
-    pm run  startnode
+   npm run  startnode
 
 -Install body-parser (For parse requests body)
   npm install --save body-parser
@@ -30,6 +30,16 @@
 -Install cors Package for providing a Connect/Express middleware
 npm install cors
 
+-Install multer. Package for Express that allows to extract incoming files from request:
+npm install --save multer
+
+
+Debugging node:
+  1. node --inspect server.js
+  2. Open Google Chrome and open "about:inspect"
+  3. Click "Open dedicated DevTools for Node"
+
+
 MongoDb Atlas cluster credentials:
 karel
-E6ogCXkMu6rEAB7m
+E6ogCXkMu6rEAB7mv

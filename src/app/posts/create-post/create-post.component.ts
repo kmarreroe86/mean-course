@@ -35,18 +35,19 @@ export class CreatePostComponent implements OnInit, OnDestroy {
           asyncValidators: [mimeTypeImageAsyncValidator]
         })
     });
-    this.postModel = { id: null, title: '', content: '' };
+    this.postModel = { id: null, title: '', content: '', imagePath: '' };
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
         this.mode = 'edit';
         this.postId = paramMap.get('postId');
         this.isLoading = true;
         this.postService.getPost(this.postId).subscribe(postData => {
-          this.postModel = { id: postData._id, title: postData.title, content: postData.content };
+          this.postModel = { id: postData._id, title: postData.title, content: postData.content, imagePath: null};
 
           this.form.setValue({
             title: this.postModel.title,
-            content: this.postModel.content
+            content: this.postModel.content,
+            image: this.postModel.imagePath
           });
 
           this.isLoading = false;
@@ -68,10 +69,16 @@ export class CreatePostComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     if (this.mode === 'create') {
-      this.postService.addPost(this.form.value.title, this.form.value.content);
+      this.postService.addPost(this.form.value.title, this.form.value.content, this.form.value.image);
       this.form.reset();
     } else {
-      this.postService.updatePost(this.postModel);
+      // this.postService.updatePost(this.postModel.id, this.postModel.title, this.postModel.content, this.form.value.image);
+      this.postService.updatePost(
+        this.postId,
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
     }
   }
 
