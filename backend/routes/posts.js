@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const Post = require('../models/post');
+const checkAuth = require('../custom_middleware/check-auth');
 
 const router = express.Router();
 
@@ -30,10 +31,24 @@ const storage = multer.diskStorage({
 // Get all posts
 router.get('', (req, res, next) => {
   // console.log(req.url);
-  Post.find((err, data) => {
+
+  const pageSize = +req.query.pagesize; // Accessing query parameters sent from frontend
+  const currentPage = +req.query.page;
+  let fetchedPosts;
+  const postQuery = Post.find();
+
+  if (pageSize && currentPage) {
+    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
+  }
+  postQuery.then(data => {
+    fetchedPosts = data;
+    return Post.countDocuments();
+  })
+  .then(count => {
     res.status(200).json({
       message: 'Post fetched successfully',
-      posts: data
+      posts: fetchedPosts,
+      maxPosts: count
     });
   });
 });
@@ -54,7 +69,7 @@ router.get('/:id', (req, res, next) => {
  * Adding extra middleware to filter for an image file. multer module, will try
  * to find a single file and will find for an image.
  */
-router.post('', multer({ storage: storage }).single('image'), (req, res, next) => {
+router.post('', checkAuth, multer({ storage: storage }).single('image'), (req, res, next) => {
 
   const url = req.protocol + '://' + req.get('host');
   const post = new Post({
@@ -74,7 +89,7 @@ router.post('', multer({ storage: storage }).single('image'), (req, res, next) =
 });
 
 // Save edited post
-router.put('/:id', multer({ storage: storage }).single('image'), (req, res, next) => {
+router.put('/:id', checkAuth, multer({ storage: storage }).single('image'), (req, res, next) => {
 
   let imagePath = req.body.imagePath;
   if (req.file) {
@@ -96,7 +111,7 @@ router.put('/:id', multer({ storage: storage }).single('image'), (req, res, next
 });
 
 // Delete post
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', checkAuth, (req, res, next) => {
   Post.deleteOne({ _id: req.params.id }).then(result => {
     res.status(200).json({ message: 'Post deleted!' });
   });

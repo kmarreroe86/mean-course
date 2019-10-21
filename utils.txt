@@ -19,7 +19,7 @@
 -Install nodemon
   npm install --save-dev nodemon
     (npm start "name_of_scripts" in packagejson)
-   npm run  startnode
+   npm run startnode
 
 -Install body-parser (For parse requests body)
   npm install --save body-parser
@@ -27,11 +27,20 @@
 -Install mongoose for MongoDB access:
   npm install --save mongoose
 
+-Install mongoose-unique-validator:
+  npm install --save mongoose-unique-validator
+
 -Install cors Package for providing a Connect/Express middleware
-npm install cors
+  npm install cors
 
 -Install multer. Package for Express that allows to extract incoming files from request:
-npm install --save multer
+  npm install --save multer
+
+-Install Bcrypt:
+  npm install --save bcrypt
+
+-Install jsonwebtoken:
+  npm install --save jsonwebtoken
 
 
 Debugging node:

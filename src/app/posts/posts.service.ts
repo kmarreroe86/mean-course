@@ -11,28 +11,31 @@ import { Router } from '@angular/router';
 })
 export class PostsService {
 
-  private postUpdated = new Subject<Post[]>();
+  private postUpdated = new Subject<{ posts: Post[], postCount: number }>();
   private posts: Post[] = [];
 
   constructor(private http: HttpClient, private router: Router) {
   }
 
-  getPosts() {
+  getPosts(postPerPage: number, currentPage: number) {
 
-    this.http.get<{ message: string, posts: any[] }>('http://localhost:3000/api/posts')
+    const queryparams = `?pagesize=${postPerPage}&page=${currentPage}`;
+    this.http.get<{ message: string, posts: any[], maxPosts: number }>('http://localhost:3000/api/posts' + queryparams)
       .pipe(map(postData => {
-        return postData.posts.map(post => {
-          return {
-            title: post.title,
-            content: post.content,
-            id: post._id,
-            imagePath: post.imagePath
-          };
-        });
-      }))
-      .subscribe((transformedPosts) => {
-        this.posts = transformedPosts;
-        this.postUpdated.next([...this.posts]);
+        return {
+          posts: postData.posts.map(post => {
+            return {
+              title: post.title,
+              content: post.content,
+              id: post._id,
+              imagePath: post.imagePath
+            };
+          }),
+          postCount: postData.maxPosts
+        };
+      })).subscribe((transformedPostsData) => {
+        this.posts = transformedPostsData.posts;
+        this.postUpdated.next({ posts: [...this.posts], postCount: transformedPostsData.postCount });
       });
     // return [...this.posts]; // Return new copy of the posts array.
   }
@@ -46,27 +49,13 @@ export class PostsService {
     postData.append('image', image, title); // 'image' key match the string in the backend for multer storage middleware in add post route.
 
     this.http.post<{ message: string, post: Post }>('http://localhost:3000/api/posts', postData)
-      .subscribe(data => {
-        console.log(data.message);
-        const post = {
-          id: data.post.id,
-          title,
-          content,
-          imagePath: data.post.imagePath
-        };
-
-        this.posts.push(post);
-        this.postUpdated.next([...this.posts]);
+      .subscribe(() => {
         this.router.navigate(['/']);
       });
   }
 
-  deletePost(id: string): void {
-    this.http.delete('http://localhost:3000/api/posts/' + id).subscribe(() => {
-      this.posts = this.posts.filter(p => p.id !== id);
-      this.postUpdated.next([...this.posts]);
-      console.log('frontend post deleted');
-    });
+  deletePost(id: string): any {
+    return this.http.delete('http://localhost:3000/api/posts/' + id);
   }
 
   getPostUpdateListListener() {
@@ -90,19 +79,7 @@ export class PostsService {
         imagePath: image
       };
     }
-    this.http.put('http://localhost:3000/api/posts/' + id, postData).subscribe(
-      response => {
-        const updatePosts = [...this.posts];
-        const oldPostIndex = updatePosts.findIndex(p => p.id === id);
-        const post: Post = {
-          id,
-          title,
-          content,
-          imagePath: ''
-        };
-        updatePosts[oldPostIndex] = post;
-        this.posts = updatePosts;
-        this.postUpdated.next([...this.posts]);
+    this.http.put('http://localhost:3000/api/posts/' + id, postData).subscribe(() => {
         this.router.navigate(['/']);
       });
 
