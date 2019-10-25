@@ -5,6 +5,9 @@ import { Subject } from 'rxjs/internal/Subject';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../post.model';
 import { mimeTypeImageAsyncValidator } from './mime-type.validator';
+import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-post',
@@ -23,9 +26,12 @@ export class CreatePostComponent implements OnInit, OnDestroy {
   form: FormGroup;
   private destroyed = new Subject();
 
-  constructor(private postService: PostsService, private route: ActivatedRoute) { }
+  constructor(private postService: PostsService, private authService: AuthService, private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.authService.getAuthSatusListener().pipe(takeUntil(this.destroyed)).subscribe(authStatus => {
+      this.isLoading = false;
+    });
     this.form = new FormGroup({
       title: new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
       content: new FormControl(null, { validators: [Validators.required] }),
@@ -35,20 +41,27 @@ export class CreatePostComponent implements OnInit, OnDestroy {
           asyncValidators: [mimeTypeImageAsyncValidator]
         })
     });
-    this.postModel = { id: null, title: '', content: '', imagePath: '' };
+
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
         this.mode = 'edit';
         this.postId = paramMap.get('postId');
         this.isLoading = true;
         this.postService.getPost(this.postId).subscribe(postData => {
-          this.postModel = { id: postData._id, title: postData.title, content: postData.content, imagePath: null};
+          this.postModel = {
+            id: postData._id,
+            title: postData.title,
+            content: postData.content,
+            imagePath: postData.imagePath,
+            creator: postData.creator
+          };
 
           this.form.setValue({
             title: this.postModel.title,
             content: this.postModel.content,
             image: this.postModel.imagePath
           });
+          this.imagePreview = this.postModel.imagePath;
 
           this.isLoading = false;
         });

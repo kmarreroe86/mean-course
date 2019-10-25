@@ -10,8 +10,12 @@ export function mimeTypeImageSyncValidator(control: AbstractControl): { [key: st
 }
 
 
-export function mimeTypeImageAsyncValidator(control: AbstractControl):
-  Promise<{ [key: string]: any }> | Observable<{ [key: string]: any }> {
+export const mimeTypeImageAsyncValidator = (control: AbstractControl):
+  Promise<{ [key: string]: any }> | Observable<{ [key: string]: any }> => {
+
+  if (typeof (control.value) === 'string') {
+    return of(null);
+  }
 
   const file = control.value as File;
   const fileReader = new FileReader();
@@ -19,9 +23,6 @@ export function mimeTypeImageAsyncValidator(control: AbstractControl):
     fileReader.addEventListener('loadend', () => {
       const arr = new Uint8Array(fileReader.result as ArrayBuffer).subarray(0, 4); // Access to the mimetype information
 
-      if (typeof(control.value) === 'string') {
-        return of(null);
-      }
       let header = '';
       let isValid = false;
       // tslint:disable-next-line: prefer-for-of
@@ -57,4 +58,4 @@ export function mimeTypeImageAsyncValidator(control: AbstractControl):
   });
 
   return fileReaderObservable;
-}
+};

@@ -14,6 +14,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 export class PostListComponent implements OnInit, OnDestroy {
 
   posts: Post[] = [];
+  userId: string;
   isLoading = false;
   totalPosts = 0;
   postsPerPage = 2;
@@ -27,15 +28,18 @@ export class PostListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isLoading = true;
     this.postService.getPosts(this.postsPerPage, this.currentPage);
+    this.userId = this.authService.getUserId();
     this.postService.getPostUpdateListListener().pipe(takeUntil(this.destroyed))
       .subscribe((postListData: { posts: Post[], postCount: number }) => {
         this.posts = postListData.posts;
         this.totalPosts = postListData.postCount;
         this.isLoading = false;
+        console.log(this.posts);
       });
 
     this.authService.getAuthSatusListener().pipe(takeUntil(this.destroyed)).subscribe(isAuthenticated => {
       this.userIsAuthenticated = isAuthenticated;
+      this.userId = this.authService.getUserId();
     });
 
     this.userIsAuthenticated = this.authService.getIsAuht();
@@ -50,6 +54,8 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.postService.deletePost(id).subscribe(() => {
       this.isLoading = true;
       this.postService.getPosts(this.postsPerPage, this.currentPage);
+    }, () => {
+      this.isLoading = true;
     });
   }
 
