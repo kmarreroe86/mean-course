@@ -51,4 +51,8 @@ Debugging node:
 
 MongoDb Atlas cluster credentials:
 karel
-E6ogCXkMu6rEAB7mv
+E6ogCXkMu6rEAB7m
+
+===== Deploying =====
+Api:
+

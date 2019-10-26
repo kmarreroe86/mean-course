@@ -48,7 +48,7 @@ exports.userLogin = (req, res, next) => {
       }
       const token = jsonwt.sign(
         { email: fechedUser.email, userId: fechedUser._id },
-        'secret_that_should-be_longer',
+        process.env.JWT_KEY,
         { expiresIn: '1h' }
       ); // Create new token based on data passed into.
       res.status(200).json({

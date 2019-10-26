@@ -10,7 +10,9 @@ const userRoutes = require('./routes/users');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://karel:E6ogCXkMu6rEAB7m@cluster0-pccc6.mongodb.net/mean-course?retryWrites=true&w=majority',
+mongoose.connect('mongodb+srv://karel:' +
+  process.env.MONGO_ATLAS_PW +
+  '@cluster0-pccc6.mongodb.net/mean-course?retryWrites=true&w=majority',
   { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Database connected successfully');
@@ -19,7 +21,7 @@ mongoose.connect('mongodb+srv://karel:E6ogCXkMu6rEAB7m@cluster0-pccc6.mongodb.ne
     console.log('Database connection failed');
   });
 
- app.use((req, res, next) => {
+app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
